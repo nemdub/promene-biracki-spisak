@@ -1,3 +1,3 @@
-Skripta `crawl.sh` učitava promene biračkog spiska sa https://upit.birackispisak.gov.rs/BrojPromena i skladišti tabelu kao lokalni CSV fajl.
+Skripta `crawl.sh` učitava promene biračkog spiska sa https://upit.birackispisak.gov.rs/BrojPromena i skladišti tabelu kao lokalni CSV fajl. Skripta takođe preuzima i tabelu sa https://upit.birackispisak.gov.rs/PregledBrojaBiraca, koja sadrži ukupan broj birača po oštini, i skladišti je kao lokalni CSV fajl.
 
 Skripta `summarize.sh` učitava i kombinuje sve prethodno skinute CSV fajlove u jedan CSV fajl radi lakšeg pregleda trenda promena.
