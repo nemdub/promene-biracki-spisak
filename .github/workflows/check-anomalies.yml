@@ -1,0 +1,42 @@
+name: Check data anomalies
+
+on:
+  workflow_run:
+    workflows: ["Update voter registry data"]
+    types: [completed]
+  schedule:
+    # Mondays at 09:30 UTC — ~1.5h after update-data.yml runs, as a safety net
+    - cron: '30 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # On workflow_run, only proceed if the parent workflow succeeded.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Make script executable
+        run: chmod +x check_anomalies.sh
+
+      - name: Run anomaly check
+        run: ./check_anomalies.sh
+
+      - name: Commit ANOMALIES.md if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ANOMALIES.md
+          if git diff --cached --quiet; then
+            echo "No anomaly-report changes to commit."
+          else
+            git commit -m "anomaly report $(date -u '+%Y-%m-%d')"
+            git push
+          fi
